@@ -229,7 +229,7 @@ $slots_available = $settings['max_students'] - $accepted_count;
                     </div>
                 <?php endif; ?>
             <?php else: ?>
-                <p>Welcome to the Regional ICT Authority Student Attachment Program. Please submit your application to be considered for an attachment opportunity.</p>
+                <p>Welcome to the Kakamega Regional ICT Authority Student Attachment Program. This program offers students the opportunity to gain practical experience in ICT and HR departments, with a focus on developing skills in Networking, IT Support, System Administration, and Coding. Please submit your application below to be considered for an attachment opportunity</p>
                 
                 <h3>Application Requirements</h3>
                 <p>To apply for attachment, you need to upload the following documents:</p>
@@ -243,9 +243,9 @@ $slots_available = $settings['max_students'] - $accepted_count;
                 <h3>Rules and Regulations</h3>
                 <ul class="rules-list">
                     <li>NO form of payment is allowed during attachment period</li>
-                    <li>Arrival time is 8am to 5pm</li>
+                    <li>Arrival time is 8am Closing time is 5pm</li>
                     <li>Dress code is professional/smart casual</li>
-                    <li>Attachment duration is minimum 8 weeks</li>
+                    <li>Attachment duration is minimum 12 weeks</li>
                     <li>You must adhere to all organizational policies</li>
                 </ul>
                 
