@@ -41,7 +41,7 @@ A web-based application for managing student internship applications at Regional
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/student-attachment-system.git
+   git clone [https://github.com/yourusername/student-attachment-system.git](https://github.com/Justopizo/Regional_ICT_Attachment_system/tree/main)
    ```
 
 2. **Database Setup**:
@@ -131,6 +131,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For support or questions, please contact:  
 [Justin Omare] - [+254793031269]  
-Project Link: [https://github.com/yourusername/student-attachment-system](https://github.com/yourusername/student-attachment-system)
+Project Link: [[https://github.com/yourusername/student-attachment-system](https://github.com/yourusername/student-attachment-system](https://github.com/Justopizo/Regional_ICT_Attachment_system/tree/main))
 ```
 
