@@ -292,7 +292,8 @@ $slots_available = $settings['max_students'] - $accepted_count;
                 <h3>Rules and Regulations</h3>
                 <ul class="rules-list">
                     <li>NO form of payment is allowed during attachment period</li>
-                    <li>Arrival time is 8am to 5pm</li>
+                    <li>Arrival time is 8am , Closing Time is 5pm</li>
+                    <li>Weekend and Public Holiday we are Closed</li>
                     <li>Dress code is professional/smart casual</li>
                     <li>Attachment duration is minimum 8 weeks</li>
                     <li>You must adhere to all organizational policies</li>

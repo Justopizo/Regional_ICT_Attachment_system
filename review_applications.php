@@ -76,6 +76,7 @@ $is_ict = ($_SESSION['role'] === 'ict');
         .logo img {
             height: 50px;
             margin-right: 15px;
+            max-width: 100%; /* Ensure image scales */
         }
         .logo h1 {
             margin: 0;
@@ -103,22 +104,25 @@ $is_ict = ($_SESSION['role'] === 'ict');
         .container {
             max-width: 1200px;
             margin: 20px auto;
-            padding: 0 20px;
+            padding: 0 10px; /* Reduced padding for mobile */
             flex: 1;
+            width: 100%; /* Full width for responsiveness */
         }
         .system-status {
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding: 20px;
+            padding: 15px;
             margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
         }
         .status-indicator {
             display: flex;
             align-items: center;
+            margin-bottom: 10px; /* Space below on mobile */
         }
         .status-dot {
             width: 15px;
@@ -139,18 +143,22 @@ $is_ict = ($_SESSION['role'] === 'ict');
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding: 20px;
+            padding: 15px;
             margin-bottom: 20px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            overflow-x: auto; /* Horizontal scroll for mobile */
+            display: block; /* Enable scrolling */
         }
         th, td {
-            padding: 12px 15px;
+            padding: 10px 12px; /* Reduced padding for mobile */
             text-align: left;
             border-bottom: 1px solid #eee;
+            white-space: nowrap; /* Prevent text wrapping */
+            min-width: 100px; /* Minimum width for columns */
         }
         th {
             background-color: #f8f9fa;
@@ -227,6 +235,65 @@ $is_ict = ($_SESSION['role'] === 'ict');
             background-color: var(--primary);
             color: white;
             margin-top: 50px;
+        }
+
+        /* Media Queries for Mobile */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                padding: 10px;
+            }
+            .logo img {
+                height: 40px; /* Smaller logo on mobile */
+            }
+            .logo h1 {
+                font-size: 16px; /* Smaller title */
+            }
+            .user-info {
+                flex-direction: column;
+                margin-top: 10px;
+            }
+            .user-info span {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            .container {
+                padding: 0 5px; /* Minimal padding on mobile */
+            }
+            .system-status {
+                flex-direction: column;
+                text-align: center;
+            }
+            .settings-btn {
+                margin-top: 10px;
+                width: 100%; /* Full width on mobile */
+            }
+            table {
+                font-size: 14px; /* Smaller text */
+            }
+            th, td {
+                padding: 8px 10px; /* Further reduced padding */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo h1 {
+                font-size: 14px; /* Even smaller on tiny screens */
+            }
+            .user-info span {
+                font-size: 12px; /* Smaller welcome text */
+            }
+            .logout-btn {
+                font-size: 12px; /* Smaller logout button */
+                padding: 6px 12px;
+            }
+            .status-indicator {
+                margin-bottom: 15px;
+            }
+            .settings-btn {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -314,7 +381,7 @@ $is_ict = ($_SESSION['role'] === 'ict');
     </div>
     
     <div class="footer">
-        &copy; <?php echo date('Y'); ?> Kakamega Regional ICT Authority. All rights reserved.
+        © <?php echo date('Y'); ?> Kakamega Regional ICT Authority. All rights reserved.
     </div>
 </body>
 </html>

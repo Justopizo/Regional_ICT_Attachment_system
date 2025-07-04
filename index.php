@@ -8,6 +8,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+
 // Redirect to appropriate dashboard based on role
 switch ($_SESSION['role']) {
     case 'student':
