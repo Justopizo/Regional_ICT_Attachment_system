@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="logo">
             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp7IsPuR-i7yeK9PYSbvr79rvqt08UzFwoR3tMqEs_GNXK6IC2PAdk4S0&s" alt="Regional ICT Authority Logo">
         </div>
-        <h2>Kakamega Regional ICT Attachment System</h2>
+        <h2>Kakamega Regional ICTA  System</h2>
         <h3>Login</h3>
         <?php if ($error): ?>
             <div class="error"><?php echo htmlspecialchars($error); ?></div>
@@ -144,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
         
         <div class="register-link">
-            Don't have an account? <a href="register.php">Register as Student</a>
+            Don't have an account? <a href="register.php">Register </a>
         </div>
     </div>
 </body>

@@ -24,13 +24,14 @@ $stmt = $pdo->query("
 $applications = $stmt->fetchAll();
 
 // Get system settings
-$settings_stmt = $pdo->query("SELECT * FROM system_settings LIMIT 1");
-$settings = $settings_stmt->fetch();
+$settings = $pdo->query("SELECT * FROM system_settings LIMIT 1")->fetch();
 
 // Count accepted applications
 $accepted_stmt = $pdo->query("SELECT COUNT(*) as count FROM applications WHERE status = 'accepted'");
 $accepted_count = $accepted_stmt->fetch()['count'];
 $slots_available = $settings['max_students'] - $accepted_count;
+
+$is_ict = ($_SESSION['role'] === 'ict');
 ?>
 
 <!DOCTYPE html>
@@ -38,17 +39,29 @@ $slots_available = $settings['max_students'] - $accepted_count;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review Applications - Regional ICT Authority</title>
+    <title>Review Applications - Kakamega ICT</title>
     <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #34495e;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background-color: #f5f7fa;
             color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         .header {
-            background-color: #2c3e50;
+            background-color: var(--primary);
             color: white;
             padding: 15px 20px;
             display: flex;
@@ -76,7 +89,7 @@ $slots_available = $settings['max_students'] - $accepted_count;
             margin-right: 15px;
         }
         .logout-btn {
-            background-color: #e74c3c;
+            background-color: var(--danger);
             color: white;
             border: none;
             padding: 8px 15px;
@@ -91,6 +104,36 @@ $slots_available = $settings['max_students'] - $accepted_count;
             max-width: 1200px;
             margin: 20px auto;
             padding: 0 20px;
+            flex: 1;
+        }
+        .system-status {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status-indicator {
+            display: flex;
+            align-items: center;
+        }
+        .status-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .status-open {
+            background-color: var(--success);
+        }
+        .status-closed {
+            background-color: var(--danger);
+        }
+        .slots-info {
+            font-weight: 500;
         }
         .applications-list {
             background-color: white;
@@ -98,28 +141,6 @@ $slots_available = $settings['max_students'] - $accepted_count;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             padding: 20px;
             margin-bottom: 20px;
-        }
-        .applications-list h2 {
-            margin-top: 0;
-            color: #2c3e50;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-        .slots-info {
-            font-weight: 500;
-            margin: 15px 0;
-            padding: 10px;
-            background-color: #e8f4fd;
-            border-radius: 4px;
-            border-left: 4px solid #3498db;
-        }
-        .slots-info.warning {
-            background-color: #fef5e7;
-            border-left-color: #f39c12;
-        }
-        .slots-info.full {
-            background-color: #fde8e8;
-            border-left-color: #e74c3c;
         }
         table {
             width: 100%;
@@ -134,7 +155,7 @@ $slots_available = $settings['max_students'] - $accepted_count;
         th {
             background-color: #f8f9fa;
             font-weight: 500;
-            color: #2c3e50;
+            color: var(--dark);
         }
         tr:hover {
             background-color: #f8f9fa;
@@ -148,15 +169,15 @@ $slots_available = $settings['max_students'] - $accepted_count;
         }
         .status-pending {
             background-color: #fef5e7;
-            color: #f39c12;
+            color: var(--warning);
         }
         .status-accepted {
             background-color: #e8f8f0;
-            color: #27ae60;
+            color: var(--success);
         }
         .status-rejected {
             background-color: #fde8e8;
-            color: #e74c3c;
+            color: var(--danger);
         }
         .action-btn {
             padding: 5px 10px;
@@ -167,21 +188,21 @@ $slots_available = $settings['max_students'] - $accepted_count;
             display: inline-block;
         }
         .view-btn {
-            background-color: #3498db;
+            background-color: var(--secondary);
             color: white;
         }
         .view-btn:hover {
             background-color: #2980b9;
         }
         .accept-btn {
-            background-color: #27ae60;
+            background-color: var(--success);
             color: white;
         }
         .accept-btn:hover {
             background-color: #219955;
         }
         .reject-btn {
-            background-color: #e74c3c;
+            background-color: var(--danger);
             color: white;
         }
         .reject-btn:hover {
@@ -192,20 +213,28 @@ $slots_available = $settings['max_students'] - $accepted_count;
             color: white;
             cursor: not-allowed;
         }
+        .settings-btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+        }
         .footer {
             text-align: center;
             padding: 20px;
-            background-color: #2c3e50;
+            background-color: var(--primary);
             color: white;
-            margin-top: 30px;
+            margin-top: 50px;
         }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="logo">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp7IsPuR-i7yeK9PYSbvr79rvqt08UzFwoR3tMqEs_GNXK6IC2PAdk4S0&s" alt="Regional ICT Authority Logo">
-            <h1>Regional ICT Authority - Review Applications</h1>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp7IsPuR-i7yeK9PYSbvr79rvqt08UzFwoR3tMqEs_GNXK6IC2PAdk4S0&s" alt="Kakamega ICT Logo">
+            <h1>Kakamega ICT - Review Applications</h1>
         </div>
         <div class="user-info">
             <span>Welcome, <?php echo htmlspecialchars($_SESSION['full_name']); ?></span>
@@ -214,19 +243,21 @@ $slots_available = $settings['max_students'] - $accepted_count;
     </div>
     
     <div class="container">
-        <div class="applications-list">
-            <h2>Student Attachment Applications</h2>
-            
-            <div class="slots-info <?php 
-                echo $slots_available <= 0 ? 'full' : 
-                    ($slots_available <= 3 ? 'warning' : ''); 
-            ?>">
-                <?php if ($slots_available > 0): ?>
-                    There are <?php echo $slots_available; ?> attachment slots available out of <?php echo $settings['max_students']; ?>.
-                <?php else: ?>
-                    All attachment slots have been filled. No more applications can be accepted.
-                <?php endif; ?>
+        <div class="system-status">
+            <div class="status-indicator">
+                <div class="status-dot <?php echo $settings['application_open'] ? 'status-open' : 'status-closed'; ?>"></div>
+                <div>
+                    Applications: <strong><?php echo $settings['application_open'] ? 'OPEN' : 'CLOSED'; ?></strong> | 
+                    Slots: <strong><?php echo $accepted_count; ?>/<?php echo $settings['max_students']; ?></strong>
+                </div>
             </div>
+            <?php if ($is_ict): ?>
+                <a href="admin_settings.php" class="settings-btn">System Settings</a>
+            <?php endif; ?>
+        </div>
+        
+        <div class="applications-list">
+            <h2>Student Applications</h2>
             
             <table>
                 <thead>
@@ -234,7 +265,7 @@ $slots_available = $settings['max_students'] - $accepted_count;
                         <th>Student Name</th>
                         <th>Email</th>
                         <th>Phone</th>
-                        <th>Attachment Period</th>
+                        <th>Period</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -260,14 +291,13 @@ $slots_available = $settings['max_students'] - $accepted_count;
                             <td>
                                 <a href="view_application_admin.php?id=<?php echo $app['id']; ?>" class="action-btn view-btn">View</a>
                                 
-                                <?php if ($_SESSION['role'] === 'hr' && $app['status'] === 'pending'): ?>
-                                    <a href="process_application.php?id=<?php echo $app['id']; ?>&action=accept" class="action-btn accept-btn">Accept</a>
-                                    <a href="process_application.php?id=<?php echo $app['id']; ?>&action=reject" class="action-btn reject-btn">Reject</a>
-                                <?php elseif ($_SESSION['role'] === 'ict' && $app['status'] === 'pending'): ?>
-                                    <a href="process_application.php?id=<?php echo $app['id']; ?>&action=accept" class="action-btn accept-btn">Accept</a>
-                                    <a href="process_application.php?id=<?php echo $app['id']; ?>&action=reject" class="action-btn reject-btn">Reject</a>
-                                <?php elseif ($app['status'] !== 'pending'): ?>
-                                    <span class="action-btn disabled-btn">Processed</span>
+                                <?php if ($is_ict): ?>
+                                    <?php if ($app['status'] === 'pending'): ?>
+                                        <a href="process_application.php?id=<?php echo $app['id']; ?>&action=accept" class="action-btn accept-btn">Accept</a>
+                                        <a href="process_application.php?id=<?php echo $app['id']; ?>&action=reject" class="action-btn reject-btn">Reject</a>
+                                    <?php else: ?>
+                                        <span class="action-btn disabled-btn">Processed</span>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -284,7 +314,7 @@ $slots_available = $settings['max_students'] - $accepted_count;
     </div>
     
     <div class="footer">
-        &copy; <?php echo date('Y'); ?> Regional ICT Authority. All rights reserved.
+        &copy; <?php echo date('Y'); ?> Kakamega Regional ICT Authority. All rights reserved.
     </div>
 </body>
 </html>

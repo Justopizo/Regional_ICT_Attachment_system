@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (strlen($password) < 8) {
         $error = 'Password must be at least 8 characters long.';
     } else {
-        // Check if username or email already exists
+        // Check if username or email exists
         $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
         $stmt->execute([$username, $email]);
         
@@ -33,10 +33,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Insert new student user
             $stmt = $pdo->prepare("INSERT INTO users (username, password, email, role, full_name, phone) VALUES (?, ?, ?, 'student', ?, ?)");
+            
             if ($stmt->execute([$username, $hashed_password, $email, $full_name, $phone])) {
-                $success = 'Registration successful! You can now login.';
-                // Clear form
-                $username = $email = $full_name = $phone = '';
+                // Get new user ID
+                $user_id = $pdo->lastInsertId();
+                
+                // Set session variables
+                $_SESSION['user_id'] = $user_id;
+                $_SESSION['username'] = $username;
+                $_SESSION['role'] = 'student';
+                $_SESSION['full_name'] = $full_name;
+                
+                // Set success message
+                $_SESSION['success'] = 'Registration successful! You can now submit your attachment application.';
+                
+                // Redirect to dashboard
+                header('Location: dashboard.php');
+                exit;
             } else {
                 $error = 'Registration failed. Please try again.';
             }
@@ -50,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Regional ICT Authority - Student Registration</title>
+    <title>Student Registration - Kakamega ICT</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -120,11 +133,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 15px;
             font-size: 14px;
         }
-        .success {
-            color: #27ae60;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
         .login-link {
             margin-top: 20px;
             text-align: center;
@@ -137,12 +145,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .login-link a:hover {
             text-decoration: underline;
         }
+        .required:after {
+            content: " *";
+            color: #e74c3c;
+        }
     </style>
 </head>
 <body>
     <div class="register-container">
         <div class="logo">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp7IsPuR-i7yeK9PYSbvr79rvqt08UzFwoR3tMqEs_GNXK6IC2PAdk4S0&s" alt="Regional ICT Authority Logo">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp7IsPuR-i7yeK9PYSbvr79rvqt08UzFwoR3tMqEs_GNXK6IC2PAdk4S0&s" alt="Kakamega ICT Logo">
         </div>
         <h2>Student Registration</h2>
         
@@ -150,21 +162,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
         
-        <?php if ($success): ?>
-            <div class="success"><?php echo htmlspecialchars($success); ?></div>
-        <?php endif; ?>
-        
         <form action="register.php" method="post">
             <div class="form-group">
-                <label for="username">Username*</label>
+                <label for="username" class="required">Username</label>
                 <input type="text" id="username" name="username" value="<?php echo isset($username) ? htmlspecialchars($username) : ''; ?>" required>
             </div>
             <div class="form-group">
-                <label for="email">Email*</label>
+                <label for="email" class="required">Email</label>
                 <input type="email" id="email" name="email" value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>" required>
             </div>
             <div class="form-group">
-                <label for="full_name">Full Name*</label>
+                <label for="full_name" class="required">Full Name</label>
                 <input type="text" id="full_name" name="full_name" value="<?php echo isset($full_name) ? htmlspecialchars($full_name) : ''; ?>" required>
             </div>
             <div class="form-group">
@@ -172,11 +180,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="tel" id="phone" name="phone" value="<?php echo isset($phone) ? htmlspecialchars($phone) : ''; ?>">
             </div>
             <div class="form-group">
-                <label for="password">Password* (min 8 characters)</label>
+                <label for="password" class="required">Password (min 8 characters)</label>
                 <input type="password" id="password" name="password" required>
             </div>
             <div class="form-group">
-                <label for="confirm_password">Confirm Password*</label>
+                <label for="confirm_password" class="required">Confirm Password</label>
                 <input type="password" id="confirm_password" name="confirm_password" required>
             </div>
             <button type="submit">Register</button>

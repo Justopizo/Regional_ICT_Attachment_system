@@ -14,18 +14,16 @@ if ($_SESSION['role'] !== 'student') {
     exit;
 }
 
-// Check if student has already applied
+// Get student's application
 $stmt = $pdo->prepare("SELECT * FROM applications WHERE user_id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $application = $stmt->fetch();
 
-// Check if applications are still open
-$settings_stmt = $pdo->query("SELECT * FROM system_settings LIMIT 1");
-$settings = $settings_stmt->fetch();
+// Get system settings
+$settings = $pdo->query("SELECT * FROM system_settings LIMIT 1")->fetch();
 
 // Count accepted applications
-$accepted_stmt = $pdo->query("SELECT COUNT(*) as count FROM applications WHERE status = 'accepted'");
-$accepted_count = $accepted_stmt->fetch()['count'];
+$accepted_count = $pdo->query("SELECT COUNT(*) as count FROM applications WHERE status = 'accepted'")->fetch()['count'];
 $slots_available = $settings['max_students'] - $accepted_count;
 ?>
 
@@ -34,17 +32,29 @@ $slots_available = $settings['max_students'] - $accepted_count;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard - Regional ICT Authority</title>
+    <title>Student Dashboard - Kakamega ICT</title>
     <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #34495e;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background-color: #f5f7fa;
             color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         .header {
-            background-color: #2c3e50;
+            background-color: var(--primary);
             color: white;
             padding: 15px 20px;
             display: flex;
@@ -72,7 +82,7 @@ $slots_available = $settings['max_students'] - $accepted_count;
             margin-right: 15px;
         }
         .logout-btn {
-            background-color: #e74c3c;
+            background-color: var(--danger);
             color: white;
             border: none;
             padding: 8px 15px;
@@ -84,9 +94,10 @@ $slots_available = $settings['max_students'] - $accepted_count;
             background-color: #c0392b;
         }
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 20px auto;
             padding: 0 20px;
+            flex: 1;
         }
         .dashboard-card {
             background-color: white;
@@ -97,9 +108,33 @@ $slots_available = $settings['max_students'] - $accepted_count;
         }
         .dashboard-card h2 {
             margin-top: 0;
-            color: #2c3e50;
+            color: var(--primary);
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+            animation: fadeIn 0.5s, fadeOut 0.5s 4s forwards;
+        }
+        .alert-info {
+            background-color: #d9edf7;
+            color: #31708f;
+            border: 1px solid #bce8f1;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
         .status-card {
             display: flex;
@@ -121,18 +156,18 @@ $slots_available = $settings['max_students'] - $accepted_count;
             font-size: 18px;
         }
         .status-pending {
-            color: #f39c12;
+            color: var(--warning);
         }
         .status-accepted {
-            color: #27ae60;
+            color: var(--success);
         }
         .status-rejected {
-            color: #e74c3c;
+            color: var(--danger);
         }
         .btn {
             display: inline-block;
             padding: 10px 15px;
-            background-color: #3498db;
+            background-color: var(--secondary);
             color: white;
             text-decoration: none;
             border-radius: 4px;
@@ -155,7 +190,7 @@ $slots_available = $settings['max_students'] - $accepted_count;
         }
         .feedback-box {
             background-color: #f8f9fa;
-            border-left: 4px solid #3498db;
+            border-left: 4px solid var(--secondary);
             padding: 15px;
             margin-top: 15px;
             border-radius: 0 4px 4px 0;
@@ -170,22 +205,30 @@ $slots_available = $settings['max_students'] - $accepted_count;
             padding: 10px;
             background-color: #e8f4fd;
             border-radius: 4px;
-            border-left: 4px solid #3498db;
+            border-left: 4px solid var(--secondary);
+        }
+        .slots-info.warning {
+            background-color: #fef5e7;
+            border-left-color: var(--warning);
+        }
+        .slots-info.full {
+            background-color: #fde8e8;
+            border-left-color: var(--danger);
         }
         .footer {
             text-align: center;
             padding: 20px;
-            background-color: #2c3e50;
+            background-color: var(--primary);
             color: white;
-            margin-top: 30px;
+            margin-top: 50px;
         }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="logo">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp7IsPuR-i7yeK9PYSbvr79rvqt08UzFwoR3tMqEs_GNXK6IC2PAdk4S0&s" alt="Regional ICT Authority Logo">
-            <h1>Regional ICT Authority - Student Attachment Portal</h1>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp7IsPuR-i7yeK9PYSbvr79rvqt08UzFwoR3tMqEs_GNXK6IC2PAdk4S0&s" alt="Kakamega ICT Logo">
+            <h1>Kakamega ICT - Student Dashboard</h1>
         </div>
         <div class="user-info">
             <span>Welcome, <?php echo htmlspecialchars($_SESSION['full_name']); ?></span>
@@ -195,18 +238,25 @@ $slots_available = $settings['max_students'] - $accepted_count;
     
     <div class="container">
         <div class="dashboard-card">
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success"><?php echo htmlspecialchars($_SESSION['success']); ?></div>
+                <?php unset($_SESSION['success']); ?>
+            <?php endif; ?>
+            
             <h2>Attachment Application</h2>
+            
+            <?php if (!$settings['application_open']): ?>
+                <div class="alert alert-info">
+                    Applications are currently closed by administrators. Please check back later.
+                </div>
+            <?php endif; ?>
             
             <?php if ($settings['application_open'] && $slots_available > 0): ?>
                 <div class="slots-info">
                     There are <?php echo $slots_available; ?> attachment slots available out of <?php echo $settings['max_students']; ?>.
                 </div>
-            <?php elseif (!$settings['application_open']): ?>
-                <div class="slots-info" style="border-left-color: #e74c3c;">
-                    Applications are currently closed.
-                </div>
-            <?php else: ?>
-                <div class="slots-info" style="border-left-color: #e74c3c;">
+            <?php elseif ($settings['application_open']): ?>
+                <div class="slots-info full">
                     All attachment slots have been filled. Applications are closed.
                 </div>
             <?php endif; ?>
@@ -229,10 +279,9 @@ $slots_available = $settings['max_students'] - $accepted_count;
                     </div>
                 <?php endif; ?>
             <?php else: ?>
-                <p>Welcome to the Kakamega Regional ICT Authority Student Attachment Program. This program offers students the opportunity to gain practical experience in ICT and HR departments, with a focus on developing skills in Networking, IT Support, System Administration, and Coding. Please submit your application below to be considered for an attachment opportunity</p>
+                <p>Welcome to the Kakamega Regional ICT Authority Student Attachment Program. Please submit your application to be considered for an attachment opportunity.</p>
                 
                 <h3>Application Requirements</h3>
-                <p>To apply for attachment, you need to upload the following documents:</p>
                 <ul class="rules-list">
                     <li>Curriculum Vitae (CV)</li>
                     <li>Insurance Cover</li>
@@ -243,9 +292,9 @@ $slots_available = $settings['max_students'] - $accepted_count;
                 <h3>Rules and Regulations</h3>
                 <ul class="rules-list">
                     <li>NO form of payment is allowed during attachment period</li>
-                    <li>Arrival time is 8am Closing time is 5pm</li>
+                    <li>Arrival time is 8am to 5pm</li>
                     <li>Dress code is professional/smart casual</li>
-                    <li>Attachment duration is minimum 12 weeks</li>
+                    <li>Attachment duration is minimum 8 weeks</li>
                     <li>You must adhere to all organizational policies</li>
                 </ul>
                 
@@ -259,7 +308,7 @@ $slots_available = $settings['max_students'] - $accepted_count;
     </div>
     
     <div class="footer">
-        &copy; <?php echo date('Y'); ?> Regional ICT Authority. All rights reserved.
+        &copy; <?php echo date('Y'); ?> Kakamega Regional ICT Authority. All rights reserved.
     </div>
 </body>
 </html>
