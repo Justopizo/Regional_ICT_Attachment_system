@@ -1,4 +1,4 @@
-// Document ready function
+
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu toggle
     const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
@@ -48,17 +48,17 @@ document.addEventListener('DOMContentLoaded', function() {
             requiredFields.forEach(field => {
                 if (!field.value.trim()) {
                     isValid = false;
-                    field.classList.add('error-field');
+                    field.classList.add('border-red-500');
                 } else {
-                    field.classList.remove('error-field');
+                    field.classList.remove('border-red-500');
                 }
             });
             
             if (!isValid) {
                 e.preventDefault();
-                const errorElement = this.querySelector('.alert-danger') || document.createElement('div');
-                if (!errorElement.classList.contains('alert-danger')) {
-                    errorElement.className = 'alert alert-danger';
+                const errorElement = this.querySelector('.bg-red-100') || document.createElement('div');
+                if (!errorElement.classList.contains('bg-red-100')) {
+                    errorElement.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mt-4';
                     errorElement.textContent = 'Please fill in all required fields.';
                     this.insertBefore(errorElement, this.firstChild);
                 }
@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
     statusBadges.forEach(badge => {
         badge.addEventListener('mouseenter', function() {
             this.style.transform = 'scale(1.1)';
+            this.style.transition = 'transform 0.2s';
         });
         
         badge.addEventListener('mouseleave', function() {
@@ -82,15 +83,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const documentLinks = document.querySelectorAll('.document-item');
     documentLinks.forEach(link => {
         link.addEventListener('click', function() {
-            // You could add analytics tracking here
             console.log('Document downloaded: ', this.textContent.trim());
         });
     });
     
     // Auto-hide success messages after 5 seconds
-    const successMessages = document.querySelectorAll('.alert-success');
+    const successMessages = document.querySelectorAll('.bg-green-100');
     successMessages.forEach(message => {
         setTimeout(() => {
+            message.style.transition = 'opacity 0.5s';
             message.style.opacity = '0';
             setTimeout(() => {
                 message.style.display = 'none';

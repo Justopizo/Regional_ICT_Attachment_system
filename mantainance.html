@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>System Maintenance - Kakamega ICT Authority</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+        }
+        .maintenance-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <div class="maintenance-card w-full max-w-md p-6 text-center">
+        <img src="ictlogo.jpeg" alt="Kakamega ICT Authority Logo" class="h-20 mx-auto mb-4">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">System Maintenance</h1>
+        <p class="text-gray-600 mb-6">We are currently performing scheduled maintenance to improve your experience.</p>
+
+        <div class="bg-gray-100 p-4 rounded-lg mb-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-2"><i class="fas fa-tools mr-2"></i> Maintenance Details</h2>
+            <p class="text-gray-600"><strong>Maintenance Started:</strong> <span id="current-time"></span></p>
+            <p class="text-gray-600"><strong>Estimated Completion:</strong> <span id="end-time"></span></p>
+            <p class="text-gray-600"><strong>Duration:</strong> 4 hours</p>
+            <p class="text-gray-600"><strong>Purpose:</strong> System updates, performance optimization, and security enhancements</p>
+            <p class="text-gray-600"><strong>Responsible:</strong> Justin Ratemo - 0793031269</p>
+        </div>
+
+        <p class="text-gray-600 mb-6">We apologize for any inconvenience caused. The system will be back online as soon as possible. Thank you for your patience!</p>
+
+        <div class="text-gray-500 text-sm">
+            <p>© <span id="current-year"></span> Kakamega Regional ICT Authority</p>
+            <p>Developed by Justin Ratemo</p>
+        </div>
+    </div>
+
+    <script>
+        // Function to format date in Kenyan time (EAT)
+        function formatKenyanDateTime(date) {
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'Africa/Nairobi',
+                timeZoneName: 'short'
+            };
+            return date.toLocaleString('en-US', options);
+        }
+
+        // Get current time in Kenyan timezone
+        const now = new Date();
+        const currentTimeFormatted = formatKenyanDateTime(now);
+
+        // Calculate end time (4 hours from now)
+        const endTime = new Date(now.getTime() + 4 * 60 * 60 * 1000);
+        const endTimeFormatted = formatKenyanDateTime(endTime);
+
+        // Update the DOM
+        document.getElementById('current-time').textContent = currentTimeFormatted;
+        document.getElementById('end-time').textContent = endTimeFormatted;
+        document.getElementById('current-year').textContent = now.getFullYear();
+    </script>
+</body>
+</html>
