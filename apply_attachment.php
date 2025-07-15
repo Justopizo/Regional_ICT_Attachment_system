@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 require_once 'config.php';
@@ -107,9 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $settings['application_window_open'
                 $stmt->execute([$new_slots, $user_id, $settings['id']]);
 
                 $pdo->commit();
-                $success = 'Application submitted successfully!';
-                header("Location: student_dashboard.php?success=" . urlencode($success));
-                exit();
+                $success = 'Registration successful! Welcome to the Western Region ICT Authority attachment program.';
             } catch (PDOException $e) {
                 $pdo->rollBack();
                 foreach ($uploads as $file) {
@@ -129,137 +126,169 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $settings['application_window_open'
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apply for Attachment - Kakamega ICT Authority</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background-color: #ffffff;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar a.nav-link {
+            color: #495057;
+            transition: background-color 0.2s;
+        }
+        .sidebar a.nav-link:hover {
+            background-color: #f1f3f5;
+        }
+        .sidebar a.active {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <div class="flex flex-col md:flex-row">
-        <aside class="w-full md:w-64 bg-white p-4 shadow-md">
-            <div class="text-center mb-6">
-                <img src="ictlogo.jpeg" alt="Kakamega ICT Logo" class="h-16 mx-auto">
-                <h3 class="text-lg font-semibold mt-2">Student Dashboard</h3>
+<body>
+    <div class="d-flex">
+        <aside class="sidebar p-4">
+            <div class="text-center mb-4">
+                <img src="ictlogo.jpeg" alt="Kakamega ICT Logo" class="img-fluid mx-auto" style="max-height: 64px;">
+                <h3 class="mt-2 fs-5 fw-bold">Student Dashboard</h3>
             </div>
-            <nav class="space-y-2">
-                <a href="student_dashboard.php" class="block p-2 text-gray-700 hover:bg-gray-200 rounded"><i class="fas fa-home mr-2"></i>Home</a>
-                <a href="apply_attachment.php" class="block p-2 text-gray-700 bg-blue-100 rounded"><i class="fas fa-file-alt mr-2"></i>Apply for Attachment</a>
-                <a href="update_profile.php" class="block p-2 text-gray-700 hover:bg-gray-200 rounded"><i class="fas fa-user-edit mr-2"></i>Update Profile</a>
-                <a href="change_password.php" class="block p-2 text-gray-700 hover:bg-gray-200 rounded"><i class="fas fa-key mr-2"></i>Change Password</a>
-                <a href="logout.php" class="block p-2 text-gray-700 hover:bg-gray-200 rounded"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+            <nav class="nav flex-column">
+                <a href="student_dashboard.php" class="nav-link"><i class="fas fa-home me-2"></i>Home</a>
+                <a href="apply_attachment.php" class="nav-link active"><i class="fas fa-file-alt me-2"></i>Apply for Attachment</a>
+                <a href="update_profile.php" class="nav-link"><i class="fas fa-user-edit me-2"></i>Update Profile</a>
+                <a href="change_password.php" class="nav-link"><i class="fas fa-key me-2"></i>Change Password</a>
+                <a href="logout.php" class="nav-link"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
             </nav>
-            <div class="mt-4 text-center text-sm text-gray-600">
+            <div class="mt-4 text-center text-muted small">
                 Logged in as: <strong><?php echo htmlspecialchars($user['username']); ?></strong>
             </div>
         </aside>
 
-        <main class="flex-1 p-6">
-            <header class="mb-6">
-                <h1 class="text-2xl font-bold">Apply for Attachment</h1>
-                <div class="mt-2 text-sm text-gray-600">
-                    <span><i class="fas fa-user"></i> <?php echo htmlspecialchars($user['full_name']); ?></span>
-                    <span class="ml-4"><i class="fas fa-envelope"></i> <?php echo htmlspecialchars($user['email']); ?></span>
+        <main class="flex-grow-1 p-4">
+            <header class="mb-4">
+                <h1 class="h2 fw-bold">Apply for Attachment</h1>
+                <div class="mt-2 text-muted small">
+                    <span><i class="fas fa-user me-1"></i> <?php echo htmlspecialchars($user['full_name']); ?></span>
+                    <span class="ms-3"><i class="fas fa-envelope me-1"></i> <?php echo htmlspecialchars($user['email']); ?></span>
                 </div>
             </header>
 
             <?php if (!$settings['application_window_open']): ?>
-                <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 p-4 rounded mb-4">
-                    <h3 class="font-bold"><i class="fas fa-exclamation-triangle"></i> Application Window Closed</h3>
+                <div class="alert alert-warning" role="alert">
+                    <h3 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Application Window Closed</h3>
                     <p>The application window is currently closed. Please check back later.</p>
-                    <a href="student_dashboard.php" class="mt-2 inline-block bg-gray-500 text-white py-1 px-3 rounded hover:bg-gray-600">Back to Dashboard</a>
+                    <a href="student_dashboard.php" class="btn btn-secondary mt-2">Back to Dashboard</a>
                 </div>
             <?php elseif ($has_pending_application): ?>
-                <div class="bg-blue-100 border border-blue-400 text-blue-700 p-4 rounded mb-4">
-                    <h3 class="font-bold"><i class="fas fa-info-circle"></i> Pending Application</h3>
+                <div class="alert alert-info" role="alert">
+                    <h3 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Pending Application</h3>
                     <p>You have a pending application. Please wait for processing.</p>
-                    <a href="student_dashboard.php" class="mt-2 inline-block bg-gray-500 text-white py-1 px-3 rounded hover:bg-gray-600">View Status</a>
+                    <a href="student_dashboard.php" class="btn btn-secondary mt-2">View Status</a>
                 </div>
             <?php else: ?>
-                <div class="bg-white p-6 rounded shadow-md">
-                    <h2 class="text-xl font-semibold mb-4"><i class="fas fa-file-alt"></i> Attachment Application Form</h2>
-                    <?php if (!empty($errors['general'])): ?>
-                        <div class="bg-red-100 border border-red-400 text-red-700 p-2 mb-4 rounded"><?php echo htmlspecialchars($errors['general']); ?></div>
-                    <?php endif; ?>
-                    <?php if ($success): ?>
-                        <div class="bg-green-100 border border-green-400 text-green-700 p-2 mb-4 rounded"><?php echo htmlspecialchars($success); ?></div>
-                    <?php endif; ?>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title h4 fw-bold"><i class="fas fa-file-alt me-2"></i>Attachment Application Form</h2>
+                        <?php if (!empty($errors['general'])): ?>
+                            <div class="alert alert-danger" role="alert"><?php echo htmlspecialchars($errors['general']); ?></div>
+                        <?php endif; ?>
+                        <?php if ($success): ?>
+                            <div class="alert alert-success" role="alert" id="successMessage"><?php echo htmlspecialchars($success); ?></div>
+                        <?php endif; ?>
 
-                    <form action="apply_attachment.php" method="POST" enctype="multipart/form-data" class="space-y-4" id="applicationForm">
-                        <div>
-                            <label for="department_preference" class="block text-sm font-medium text-gray-700">Preferred Department</label>
-                            <select id="department_preference" name="department_preference" required class="w-full p-2 border rounded">
-                                <option value="">Select Department</option>
-                                <option value="hr" <?php echo (isset($_POST['department_preference']) && $_POST['department_preference'] === 'hr') ? 'selected' : ''; ?>>HR Department</option>
-                                <option value="ict" <?php echo (isset($_POST['department_preference']) && $_POST['department_preference'] === 'ict') ? 'selected' : ''; ?>>ICT Department</option>
-                                <option value="registry" <?php echo (isset($_POST['department_preference']) && $_POST['department_preference'] === 'registry') ? 'selected' : ''; ?>>Registry Department</option>
-                            </select>
-                            <?php if (!empty($errors['department_preference'])): ?>
-                                <p class="text-red-500 text-sm"><?php echo htmlspecialchars($errors['department_preference']); ?></p>
-                            <?php endif; ?>
-                        </div>
+                        <form action="apply_attachment.php" method="POST" enctype="multipart/form-data" class="row g-3" id="applicationForm">
+                            <div class="col-12">
+                                <label for="department_preference" class="form-label fw-bold">Preferred Department</label>
+                                <select id="department_preference" name="department_preference" required class="form-select">
+                                    <option value="">Select Department</option>
+                                    <option value="hr" <?php echo (isset($_POST['department_preference']) && $_POST['department_preference'] === 'hr') ? 'selected' : ''; ?>>HR Department</option>
+                                    <option value="ict" <?php echo (isset($_POST['department_preference']) && $_POST['department_preference'] === 'ict') ? 'selected' : ''; ?>>ICT Department</option>
+                                    <option value="registry" <?php echo (isset($_POST['department_preference']) && $_POST['department_preference'] === 'registry') ? 'selected' : ''; ?>>Registry Department</option>
+                                </select>
+                                <?php if (!empty($errors['department_preference'])): ?>
+                                    <div class="text-danger small"><?php echo htmlspecialchars($errors['department_preference']); ?></div>
+                                <?php endif; ?>
+                            </div>
 
-                        <div>
-                            <label for="application_letter" class="block text-sm font-medium text-gray-700">Application Letter (PDF/DOC/DOCX)</label>
-                            <input type="file" id="application_letter" name="application_letter" accept=".pdf,.doc,.docx" required class="w-full p-2 border rounded">
-                            <?php if (!empty($errors['application_letter'])): ?>
-                                <p class="text-red-500 text-sm"><?php echo htmlspecialchars($errors['application_letter']); ?></p>
-                            <?php endif; ?>
-                            <small class="text-gray-500">Upload your formal application letter</small>
-                        </div>
+                            <div class="col-12">
+                                <label for="application_letter" class="form-label fw-bold">Application Letter (PDF/DOC/DOCX)</label>
+                                <input type="file" id="application_letter" name="application_letter" accept=".pdf,.doc,.docx" required class="form-control">
+                                <?php if (!empty($errors['application_letter'])): ?>
+                                    <div class="text-danger small"><?php echo htmlspecialchars($errors['application_letter']); ?></div>
+                                <?php endif; ?>
+                                <div class="form-text">Upload your formal application letter</div>
+                            </div>
 
-                        <div>
-                            <label for="insurance" class="block text-sm font-medium text-gray-700">Insurance Cover (PDF/DOC/DOCX/JPG/JPEG/PNG)</label>
-                            <input type="file" id="insurance" name="insurance" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required class="w-full p-2 border rounded">
-                            <?php if (!empty($errors['insurance'])): ?>
-                                <p class="text-red-500 text-sm"><?php echo htmlspecialchars($errors['insurance']); ?></p>
-                            <?php endif; ?>
-                            <small class="text-gray-500">Upload proof of valid insurance</small>
-                        </div>
+                            <div class="col-12">
+                                <label for="insurance" class="form-label fw-bold">Insurance Cover (PDF/DOC/DOCX/JPG/JPEG/PNG)</label>
+                                <input type="file" id="insurance" name="insurance" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required class="form-control">
+                                <?php if (!empty($errors['insurance'])): ?>
+                                    <div class="text-danger small"><?php echo htmlspecialchars($errors['insurance']); ?></div>
+                                <?php endif; ?>
+                                <div class="form-text">Upload proof of valid insurance</div>
+                            </div>
 
-                        <div>
-                            <label for="cv" class="block text-sm font-medium text-gray-700">Curriculum Vitae (PDF/DOC/DOCX)</label>
-                            <input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx" required class="w-full p-2 border rounded">
-                            <?php if (!empty($errors['cv'])): ?>
-                                <p class="text-red-500 text-sm"><?php echo htmlspecialchars($errors['cv']); ?></p>
-                            <?php endif; ?>
-                            <small class="text-gray-500">Upload your current CV</small>
-                        </div>
+                            <div class="col-12">
+                                <label for="cv" class="form-label fw-bold">Curriculum Vitae (PDF/DOC/DOCX)</label>
+                                <input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx" required class="form-control">
+                                <?php if (!empty($errors['cv'])): ?>
+                                    <div class="text-danger small"><?php echo htmlspecialchars($errors['cv']); ?></div>
+                                <?php endif; ?>
+                                <div class="form-text">Upload your current CV</div>
+                            </div>
 
-                        <div>
-                            <label for="introduction_letter" class="block text-sm font-medium text-gray-700">Introduction Letter (PDF/DOC/DOCX)</label>
-                            <input type="file" id="introduction_letter" name="introduction_letter" accept=".pdf,.doc,.docx" required class="w-full p-2 border rounded">
-                            <?php if (!empty($errors['introduction_letter'])): ?>
-                                <p class="text-red-500 text-sm"><?php echo htmlspecialchars($errors['introduction_letter']); ?></p>
-                            <?php endif; ?>
-                            <small class="text-gray-500">Upload your institution's letter</small>
-                        </div>
+                            <div class="col-12">
+                                <label for="introduction_letter" class="form-label fw-bold">Introduction Letter (PDF/DOC/DOCX)</label>
+                                <input type="file" id="introduction_letter" name="introduction_letter" accept=".pdf,.doc,.docx" required class="form-control">
+                                <?php if (!empty($errors['introduction_letter'])): ?>
+                                    <div class="text-danger small"><?php echo htmlspecialchars($errors['introduction_letter']); ?></div>
+                                <?php endif; ?>
+                                <div class="form-text">Upload your institution's letter</div>
+                            </div>
 
-                        <div>
-                            <label for="side_hustle" class="block text-sm font-medium text-gray-700">Side Hustles/Skills (Optional)</label>
-                            <textarea id="side_hustle" name="side_hustle" rows="3" class="w-full p-2 border rounded"><?php echo htmlspecialchars($_POST['side_hustle'] ?? ''); ?></textarea>
-                            <small class="text-gray-500">List any side hustles or skills</small>
-                        </div>
+                            <div class="col-12">
+                                <label for="side_hustle" class="form-label fw-bold">Side Hustles/Skills (Optional)</label>
+                                <textarea id="side_hustle" name="side_hustle" rows="3" class="form-control"><?php echo htmlspecialchars($_POST['side_hustle'] ?? ''); ?></textarea>
+                                <div class="form-text">List any side hustles or skills</div>
+                            </div>
 
-                        <div class="flex space-x-2">
-                            <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Submit Application</button>
-                            <a href="student_dashboard.php" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">Cancel</a>
-                        </div>
-                    </form>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary me-2"><i class="fas fa-paper-plane me-1"></i>Submit Application</button>
+                                <a href="student_dashboard.php" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
-                <div class="bg-white p-6 rounded shadow-md mt-6">
-                    <h3 class="text-lg font-semibold mb-2"><i class="fas fa-info-circle"></i> Application Status</h3>
-                    <p><strong>Application Window:</strong> <?php echo $settings['application_window_open'] ? 'OPEN' : 'CLOSED'; ?></p>
-                    <p><strong>HR Slots Available:</strong> <?php echo $settings['hr_slots_remaining']; ?> / <?php echo $settings['hr_slots']; ?></p>
-                    <p><strong>ICT Slots Available:</strong> <?php echo $settings['ict_slots_remaining']; ?> / <?php echo $settings['ict_slots']; ?></p>
-                    <p><strong>Registry Slots Available:</strong> <?php echo $settings['registry_slots_remaining']; ?> / <?php echo $settings['registry_slots']; ?></p>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title h5 fw-bold"><i class="fas fa-info-circle me-2"></i>Application Status</h3>
+                        <p><strong>Application Window:</strong> <?php echo $settings['application_window_open'] ? '<span class="text-success">OPEN</span>' : '<span class="text-danger">CLOSED</span>'; ?></p>
+                        <p><strong>HR Slots Available:</strong> <?php echo $settings['hr_slots_remaining']; ?> / <?php echo $settings['hr_slots']; ?></p>
+                        <p><strong>ICT Slots Available:</strong> <?php echo $settings['ict_slots_remaining']; ?> / <?php echo $settings['ict_slots']; ?></p>
+                        <p><strong>Registry Slots Available:</strong> <?php echo $settings['registry_slots_remaining']; ?> / <?php echo $settings['registry_slots']; ?></p>
+                    </div>
                 </div>
             <?php endif; ?>
         </main>
     </div>
 
-    <footer class="mt-6 text-center text-gray-600 text-sm">
+    <footer class="mt-4 text-center text-muted small py-3">
         <p>© 2025 Kakamega Regional ICT Authority | Developed by Justin Ratemo - 0793031269</p>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('applicationForm')?.addEventListener('submit', function(e) {
             const files = {
@@ -285,6 +314,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $settings['application_window_open'
             if (hasError) {
                 e.preventDefault();
                 alert('Please upload all required files with valid formats.');
+            }
+        });
+
+        // Hide success message after 10 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const successMessage = document.getElementById('successMessage');
+            if (successMessage) {
+                setTimeout(function() {
+                    successMessage.style.display = 'none';
+                }, 10000); // 10 seconds
             }
         });
     </script>
